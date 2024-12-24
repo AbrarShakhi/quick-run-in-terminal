@@ -1,0 +1,113 @@
+{
+  "name": "quick-run-in-terminal",
+  "displayName": "Quick run in terminal",
+  "description": "Run C, C++, python program in terminal",
+  "publisher": "AbrarShakhi",
+  "bugs": {
+    "type": "git",
+    "url": "https://github.com/AbrarShakhi/quick-run-in-terminal/issues"
+  },
+  "homepage" : "https://github.com/AbrarShakhi/quick-run-in-terminal/blob/main/README.md",
+  "license": "GNU",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AbrarShakhi/quick-run-in-terminal"
+  },
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.95.0"
+  },
+  "keywords": [
+    "C",
+    "run",
+    "Compile",
+    "build",
+    "cpp",
+    "c++",
+    "C plus plus",
+    "python",
+    "run code",
+    "code runner",
+    "quick run",
+    "run in terminal",
+    "terminal",
+    "run c/c++"
+  ],
+  "icon": "res/icons/icon.png",
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [],
+  "main": "./src/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "quickRunInTerminal.run",
+        "icon": "$(debug-console)",
+        "title": "Quick Run"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "quickRunInTerminal.run",
+          "group": "navigation"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "quickRunInTerminal.run",
+        "key": "ctrl+alt+C"
+      }
+    ],
+    "configuration": {
+      "title": "Quick run in Terminal Configuration",
+      "properties": {
+        "quickRunInTerminal.clearBeforeRun": {
+          "type": "boolean",
+          "default": true,
+          "description": "Clear terminal before run"
+        },
+        "quickRunInTerminal.saveAllFilesBeforeRun": {
+          "type": "boolean",
+          "default": false,
+          "description": "save all files before run, default only save active file"
+        },
+        "quickRunInTerminal.binaryOutputName": {
+          "type": "string",
+          "default": "",
+          "description": "Name of the build binary file. if empty string then name of the file will be used."
+        },
+        "quickRunInTerminal.C_compilerPath": {
+          "type": "string",
+          "default": "gcc",
+          "description": "C compiler path/compiler name"
+        },
+        "quickRunInTerminal.Cpp_compilerPath": {
+          "type": "string",
+          "default": "g++",
+          "description": "C++ compiler path/compiler name"
+        },
+        "quickRunInTerminal.Python_interpreterPath": {
+          "type": "string",
+          "default": "python",
+          "description": "python interpreter/path name"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "pretest": "npm run lint",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.96.0",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "20.x",
+    "eslint": "^9.16.0",
+    "@vscode/test-cli": "^0.0.10",
+    "@vscode/test-electron": "^2.4.1"
+  }
+}
