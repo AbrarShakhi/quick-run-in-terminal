@@ -11,28 +11,12 @@ class Terminal {
         this.filepath = path.normalize(uri.fsPath);
         this.dirlocation = utils.getDirLocation(this.filepath);
         this.filename = utils.getFilename(this.filepath);
-        this.extname = path.extname(this.filepath).toLowerCase();
+        this.extname = utils.getExtname(this.filepath).toLowerCase();
 
         this.cmd = [];
     }
 
-    buildC() {
-        const compiler = this.cfg.get('C_compilerPath');
-        let outname = this.cfg.get('binaryOutputName');
-        if (outname == '') {
-            outname = this.filename;
-        }
-        this.cmd.push(`${compiler} "${this.filepath}" -o "${outname}.out"`);
-        if (this.vscode.env.shell.includes('cmd.exe')) {
-            this.cmd.push(`".\\${outname}.out"`);
-        } else {
-            this.cmd.push(`"./${outname}.out"`);
-        }
-        return true;
-    }
-    
-    buildCpp() {
-        const compiler = this.cfg.get('Cpp_compilerPath');
+    buildCCpp(compiler) {
         let outname = this.cfg.get('binaryOutputName');
         if (outname == '') {
             outname = this.filename;
@@ -61,7 +45,7 @@ class Terminal {
         this.cmd.push(`cd "${this.dirlocation}"`);
 
         if (this.cfg.get('clearBeforeRun')) {
-            if (process.platform == 'win32') {
+            if (this.vscode.env.shell.includes('cmd.exe')) {
                 this.cmd.push('cls');
             } else {
                 this.cmd.push('clear');
@@ -69,11 +53,11 @@ class Terminal {
         }
 
         switch (this.extname) {
-            case '.c':
-                return this.buildC();
-            case '.cpp':
-                return this.buildCpp();
-            case '.py':
+            case 'c':
+                return this.buildCCpp(this.cfg.get('C_compilerPath'));
+            case 'cpp':
+                return this.buildCCpp(this.cfg.get('Cpp_compilerPath'));
+            case 'py':
                 return this.buildPython();
         }
         return false;
