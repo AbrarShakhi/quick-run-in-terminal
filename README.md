@@ -52,3 +52,5 @@ First open a `C`, `C++`, `python` files.
 ----
 
 report bugs/issues here [github](https://github.com/AbrarShakhi/runccpp-vsce/issues)
+
+<a href="https://www.flaticon.com/free-icons/coding" title="coding icons">Coding icons created by iconsmind - Flaticon</a>
