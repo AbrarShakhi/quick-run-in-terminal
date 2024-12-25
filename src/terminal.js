@@ -37,11 +37,16 @@ class Terminal {
         if (outname == '') {
             outname = this.filename;
         }
-        this.cmd.push(`${compiler} "${this.filepath}" -o "${outname}.out"`);
-        if (this.vscode.env.shell.includes('cmd.exe')) {
-            this.cmd.push(`".\\${outname}.out"`);
+        if (process.platform == 'win32') {
+            outname = outname + ".exe";
         } else {
-            this.cmd.push(`"./${outname}.out"`);
+            outname = outname + ".out";
+        }
+        this.cmd.push(`${compiler} "${this.filepath}" -o "${outname}"`);
+        if (this.vscode.env.shell.includes('cmd.exe')) {
+            this.cmd.push(`.\\"${outname}"`);
+        } else {
+            this.cmd.push(`./"${outname}"`);
         }
         return true;
     }

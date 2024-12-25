@@ -51,6 +51,21 @@
       "editor/title": [
         {
           "command": "quickRunInTerminal.run",
+          "when": "resourceLangId == c || resourceLangId == cpp || resourceLangId == python",
+          "group": "navigation"
+        }
+      ],
+      "editor/context": [
+        {
+          "command": "quickRunInTerminal.run",
+          "when": "resourceLangId == c || resourceLangId == cpp || resourceLangId == python",
+          "group": "navigation"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "quickRunInTerminal.run",
+          "when": "resourceLangId == c || resourceLangId == cpp || resourceLangId == python",
           "group": "navigation"
         }
       ]
