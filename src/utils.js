@@ -23,7 +23,15 @@ function getFilename(path) {
     }
 }
 
+function getExtname(path) {
+    if (process.platform === 'win32') {
+        return path.split("\\").pop().split(".")[1];
+    } else {
+        return path.split("/").pop().split(".")[1];
+    }
+}
 
 
 
-module.exports = { saveFiles, getDirLocation, getFilename };
+
+module.exports = { saveFiles, getDirLocation, getFilename, getExtname};
