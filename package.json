@@ -48,7 +48,7 @@
       }
     ],
     "menus": {
-      "editor/title": [
+      "editor/title/run": [
         {
           "command": "quickRunInTerminal.run",
           "when": "resourceLangId == c || resourceLangId == cpp || resourceLangId == python",
