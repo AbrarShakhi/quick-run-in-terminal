@@ -1,37 +1,66 @@
+const modPath = require("path");
+const vscode = require("vscode");
 
-function saveFiles(vscode, cfg, uri) {
-    if (cfg.get('saveAllFilesBeforeRun')) {
-        vscode.workspace.saveAll();
-    } else {
-        vscode.workspace.save(uri);
-    }
+/**
+ * @param {vscode.Uri} uri
+ */
+function saveFiles(uri) {
+	const cfg = vscode.workspace.getConfiguration("quickRunInTerminal");
+	if (cfg.get("saveAllFilesBeforeRun")) {
+		vscode.workspace.saveAll();
+	} else {
+		vscode.workspace.save(uri);
+	}
 }
 
-function getDirLocation(path) {
-    if (process.platform === 'win32') {
-        return path.substring(0, path.lastIndexOf("\\"));
-    } else {
-        return path.substring(0, path.lastIndexOf("/"));
-    }
+class File {
+	/**
+	 * @param {vscode.TextDocument} doc
+	 */
+	constructor(doc) {
+		this.doc = doc;
+		this.uri = this.doc.uri;
+
+		this.fullpath = this.doc.fileName;
+		this.dirloca = this.#getDirLocation();
+
+		this.filename = this.#getFilename();
+		this.langId = this.doc.languageId;
+
+		this.filenameWithoutExt = this.filename.split(".")[0];
+		this.extname = this.filename.split(".")[1];
+	}
+
+	#getDirLocation() {
+		if (process.platform === "win32") {
+			return this.fullpath.substring(0, this.fullpath.lastIndexOf("\\"));
+		} else {
+			return this.fullpath.substring(0, this.fullpath.lastIndexOf("/"));
+		}
+	}
+
+	#getFilename() {
+		if (process.platform === "win32") {
+			return this.fullpath.split("\\").pop();
+		} else {
+			return this.fullpath.split("/").pop();
+		}
+	}
 }
 
-function getFilename(path) {
-    if (process.platform === 'win32') {
-        return path.split("\\").pop().split(".")[0];
-    } else {
-        return path.split("/").pop().split(".")[0];
-    }
+/**
+ * @returns {string} "cls" | "clear"
+ */
+function getClear() {
+	if (vscode.env.shell.includes("cmd.exe")) {
+		return "cls";
+	} else {
+		return "clear";
+	}
 }
 
-function getExtname(path) {
-    if (process.platform === 'win32') {
-        return path.split("\\").pop().split(".")[1];
-    } else {
-        return path.split("/").pop().split(".")[1];
-    }
-}
-
-
-
-
-module.exports = { saveFiles, getDirLocation, getFilename, getExtname};
+module.exports = {
+	saveFiles,
+	getClear,
+	File,
+};
