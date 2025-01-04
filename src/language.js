@@ -1,37 +1,90 @@
 const vscode = require("vscode");
+const log = require("console").log;
+const path = require("path");
+
 const utils = require("./utils.js");
 
 class Language {
 	/**
-	 * @param {utils.File} file
+	 * @param {vscode.TextDocument} doc
 	 */
-	constructor(file) {
-		this.file = file;
+	constructor(doc) {
+		this.doc = doc;
+		this.file = path.parse(path.normalize(this.doc.fileName));
 	}
 
 	/**
 	 * @param void
-	 * @returns { string[] | undefined}
+	 * @returns {string[] | undefined}
 	 */
 	buildCommand() {
-		console.log(this.file.langId);
+		let cfg = vscode.workspace.getConfiguration("quickRunInTerminal");
+		const build = new Build(this.doc, this.file, cfg);
 
-		switch (this.file.langId) {
+		switch (this.doc.languageId) {
 			case "c":
-				// TODO: C
+				build.c_cpp(cfg.get("C_compilerPath"));
 				break;
 			case "cpp":
-				// TODO: C++
+				build.c_cpp(cfg.get("Cpp_compilerPath"));
 				break;
 			case "python":
-				// TODO: python
+				build.python();
 				break;
-			case "csharp":
-				// TODO: csharp
-				break;
+			default:
+				return undefined;
 		}
-		return undefined;
+		return build.commands;
 	}
 }
 
+class Build {
+	/**
+	 * @param {vscode.TextDocument} doc
+	 * @param {path.ParsedPath} file
+	 * @param {vscode.WorkspaceConfiguration} cfg
+	 */
+	constructor(doc, file, cfg) {
+		this.doc = doc;
+		this.file = file;
+		this.fullpath = path.normalize(this.doc.fileName);
+		this.cfg = cfg;
+		this.commands = [];
+	}
+
+	/**
+	 * @param void
+	 * @returns {string[]}
+	 */
+	python() {
+		const interpreter = this.cfg.get("Python_interpreterPath");
+		this.commands.push(`${interpreter} "${this.fullpath}"`);
+		return this.commands;
+	}
+
+	/**
+	 * @param {string} compiler
+	 * @returns {string[]}
+	 */
+	c_cpp(compiler) {
+		let outname = this.cfg.get("binaryOutputName");
+		if (outname == "") {
+			outname = path.parse(this.fullpath).name;
+		}
+		if (process.platform == "win32") {
+			outname = outname + ".exe";
+		} else {
+			outname = outname + ".out";
+		}
+
+		outname = path.join(path.parse(this.fullpath).dir, outname);
+		log(outname);
+
+		this.commands.push(`${compiler} "${this.fullpath}" -o "${outname}"`);
+
+		this.commands.push(outname);
+
+		return this.commands;
+	}
+}
 module.exports = { Language };
