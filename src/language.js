@@ -1,44 +1,36 @@
 const vscode = require("vscode");
-const log = require("console").log;
 const path = require("path");
 
-const utils = require("./utils.js");
+/**
+ * @param {vscode.TextDocument} doc
+ * @returns {string[] | undefined}
+ */
+function build(doc) {
+	const file = path.parse(path.normalize(doc.fileName));
+	const cfg = vscode.workspace.getConfiguration("quickRunInTerminal");
+	const lang = new Language(doc, file, cfg);
 
-class Language {
-	/**
-	 * @param {vscode.TextDocument} doc
-	 */
-	constructor(doc) {
-		this.doc = doc;
-		this.file = path.parse(path.normalize(this.doc.fileName));
+	switch (doc.languageId) {
+		case "c":
+			lang.c_cpp(cfg.get("C_compilerPath"));
+			break;
+		case "cpp":
+			lang.c_cpp(cfg.get("Cpp_compilerPath"));
+			break;
+		case "python":
+			lang.python();
+			break;
+		case "rust":
+		// TODO: make a runst runner and uncomment 'break' statement
+		// break;
+		default:
+			console.log(doc.languageId);
+			return undefined;
 	}
-
-	/**
-	 * @param void
-	 * @returns {string[] | undefined}
-	 */
-	buildCommand() {
-		let cfg = vscode.workspace.getConfiguration("quickRunInTerminal");
-		const build = new Build(this.doc, this.file, cfg);
-
-		switch (this.doc.languageId) {
-			case "c":
-				build.c_cpp(cfg.get("C_compilerPath"));
-				break;
-			case "cpp":
-				build.c_cpp(cfg.get("Cpp_compilerPath"));
-				break;
-			case "python":
-				build.python();
-				break;
-			default:
-				return undefined;
-		}
-		return build.commands;
-	}
+	return lang.commands;
 }
 
-class Build {
+class Language {
 	/**
 	 * @param {vscode.TextDocument} doc
 	 * @param {path.ParsedPath} file
@@ -78,7 +70,7 @@ class Build {
 		}
 
 		outname = path.join(path.parse(this.fullpath).dir, outname);
-		log(outname);
+		console.log(outname);
 
 		this.commands.push(`${compiler} "${this.fullpath}" -o "${outname}"`);
 
@@ -87,4 +79,5 @@ class Build {
 		return this.commands;
 	}
 }
-module.exports = { Language };
+
+module.exports = { build };

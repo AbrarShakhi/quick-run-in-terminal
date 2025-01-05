@@ -1,5 +1,4 @@
 const vscode = require("vscode");
-const log = require("console").log;
 
 const utils = require("./utils");
 const terminal = require("./terminal");
@@ -9,7 +8,7 @@ const language = require("./language");
  * @param {vscode.ExtensionContext} context
  */
 function activate(context) {
-	log('"quick-run-in-terminal" is now active!');
+	console.log('"quick-run-in-terminal" is now active!');
 
 	const disposable = vscode.commands.registerCommand(
 		"quickRunInTerminal.run",
@@ -25,17 +24,22 @@ function activate(context) {
 
 			utils.saveFiles(doc.uri);
 
-			let commands = new language.Language(doc).buildCommand();
+			const commands = language.build(doc);
 			if (!commands) {
 				vscode.window
-					.showErrorMessage("Supported files: [C, C++, python]", "OK")
-					.then();
+					.showErrorMessage(
+						`${doc.languageId} is not supported yet`
+						// "Request this language"
+					)
+					.then((clicked) => {
+						// console.log("got value: " + clicked);
+					});
 				return;
 			}
 
-			//   const term = new terminal.Terminal(commands, file);
+			const term = new terminal.Terminal(commands, doc);
 			//   if (term.build()) {
-			//     term.run();
+			term.run();
 			//   } else {
 			//   }
 		}
@@ -45,7 +49,7 @@ function activate(context) {
 }
 
 function deactivate() {
-	log('"quick-run-in-terminal" is deactivated!');
+	console.log('"quick-run-in-terminal" is deactivated!');
 }
 
 module.exports = {

@@ -1,5 +1,5 @@
-const log = require("console").log;
 const vscode = require("vscode");
+const path = require("path");
 
 /**
  * @param {vscode.Uri} uri
@@ -14,10 +14,19 @@ function saveFiles(uri) {
 }
 
 /**
+ * @returns {string}
+ */
+function getShellname() {
+	return path.basename(path.normalize(vscode.env.shell));
+}
+
+/**
  * @returns {string} "cls" | "clear"
  */
 function getClear() {
-	if (vscode.env.shell.includes("cmd.exe")) {
+	const shellname = getShellname().toLowerCase();
+	console.log("vscode shellname: " + shellname);
+	if (shellname === "cmd.exe") {
 		return "cls";
 	} else {
 		return "clear";
@@ -27,4 +36,5 @@ function getClear() {
 module.exports = {
 	saveFiles,
 	getClear,
+	getShellname,
 };
