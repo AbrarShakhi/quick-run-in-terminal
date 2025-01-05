@@ -38,10 +38,7 @@ function activate(context) {
 			}
 
 			const term = new terminal.Terminal(commands, doc);
-			//   if (term.build()) {
 			term.run();
-			//   } else {
-			//   }
 		}
 	);
 

@@ -1,9 +1,11 @@
 const vscode = require("vscode");
 const path = require("path");
 
+const terminal = require("./terminal");
+
 /**
  * @param {vscode.TextDocument} doc
- * @returns {string[] | undefined}
+ * @returns {terminal.Cmd[] | undefined}
  */
 function build(doc) {
 	const file = path.parse(path.normalize(doc.fileName));
@@ -46,17 +48,19 @@ class Language {
 
 	/**
 	 * @param void
-	 * @returns {string[]}
+	 * @returns {terminal.Cmd[]}
 	 */
 	python() {
 		const interpreter = this.cfg.get("Python_interpreterPath");
-		this.commands.push(`${interpreter} "${this.fullpath}"`);
+		let args = [`"${this.fullpath}"`];
+
+		this.commands.push(new terminal.Cmd(interpreter, args));
 		return this.commands;
 	}
 
 	/**
 	 * @param {string} compiler
-	 * @returns {string[]}
+	 * @returns {terminal.Cmd[]}
 	 */
 	c_cpp(compiler) {
 		let outname = this.cfg.get("binaryOutputName");
@@ -70,11 +74,12 @@ class Language {
 		}
 
 		outname = path.join(path.parse(this.fullpath).dir, outname);
-		console.log(outname);
 
-		this.commands.push(`${compiler} "${this.fullpath}" -o "${outname}"`);
-
-		this.commands.push(outname);
+		this.commands.push(
+			// TODO: MAKE A FUNCTION TO AUTOMATIC DUBBLE QUOATE PATH
+			new terminal.Cmd(compiler, [`"${this.fullpath}"`, "-o", `"${outname}"`])
+		);
+		this.commands.push(new terminal.Cmd(outname, []));
 
 		return this.commands;
 	}

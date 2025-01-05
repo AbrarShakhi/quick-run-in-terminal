@@ -3,19 +3,28 @@ const path = require("path");
 
 const utils = require("./utils");
 
+/**
+ * @param {string} command
+ * @param {string[]} args
+ */
+function Cmd(command, args) {
+	this.command = command;
+	this.args = args;
+}
+
 class Terminal {
 	/**
-	 * @param {string[]} commands
+	 * @param {Cmd[]} commands
 	 * @param {vscode.TextDocument} doc
 	 */
 	constructor(commands, doc) {
 		this.commands = commands;
 		this.dir = path.dirname(path.normalize(doc.fileName));
-		this.shell = utils.getShellname();
+		this.shell = utils.getShellname().toLowerCase();
 		this.terminame = "Quick-Run";
 
 		this.term = this.#initTerm();
-		this.runnerString = this.#finalizeCommand();
+		this.runnerScript = this.#finalizeCommand();
 	}
 
 	/**
@@ -37,15 +46,44 @@ class Terminal {
 	 * @returns {string | undefined}
 	 */
 	#finalizeCommand() {
-		/**
-		 * NB:
-		 * type: cd dir; clear; command
-		 * command prompt doesnot like: "
-		 * pwershell doesnt like: &&
-		 * need to put & before running if it has " in powershell
-		 * stupid Windows
-		 */
-		return "";
+		if (
+			vscode.workspace
+				.getConfiguration("quickRunInTerminal")
+				.get("clearBeforeRun")
+		) {
+			this.commands.unshift(new Cmd(utils.getClear(), []));
+		}
+
+		this.commands.unshift(new Cmd("cd", [`"${this.dir}"`]));
+
+		if (this.commands.length < 1) {
+			return undefined;
+		}
+
+		let cmdSep = " && ";
+		const cmdEnd = " ; ";
+		// TODO: NEED TO COMPARE WITHOUT .exe
+		if (this.shell === "powershell.exe" || this.shell === "pwsh.exe") {
+			cmdSep = cmdEnd;
+		}
+
+		// TODO: NEED TO DECOMPOSE INTO FUNCTIONS;
+		let script = "";
+		let singleCmd = this.commands[0].command;
+		for (let i = 0; i < this.commands[0].args.length; i++) {
+			singleCmd += ` ${this.commands[0].args[i]}`;
+		}
+		script += singleCmd + (1 == this.commands.length ? cmdEnd : cmdSep);
+
+		// TODO: NEED TO MAKE IT LESS COMPLEX
+		for (let i = 1; i < this.commands.length; i++) {
+			singleCmd = this.commands[i].command;
+			for (let j = 0; j < this.commands[i].args.length; j++) {
+				singleCmd += ` ${this.commands[i].args[j]}`;
+			}
+			script += singleCmd + (i + 1 == this.commands.length ? cmdEnd : cmdSep);
+		}
+		return script;
 	}
 
 	/**
@@ -53,8 +91,14 @@ class Terminal {
 	 * @returns {boolean}
 	 */
 	run() {
-		if (!this.runnerString) return false;
+		if (!this.runnerScript || !this.term) {
+			return false;
+		}
+		this.term.show();
+		this.term.sendText("");
+		this.term.sendText(this.runnerScript);
+		return true;
 	}
 }
 
-module.exports = { Terminal };
+module.exports = { Terminal, Cmd };
