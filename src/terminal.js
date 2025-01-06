@@ -51,12 +51,10 @@ class Terminal {
 				.getConfiguration("quickRunInTerminal")
 				.get("clearBeforeRun")
 		) {
-			this.commands.unshift(new Cmd(utils.quoted(utils.getClear()), []));
+			this.commands.unshift(new Cmd(utils.getClear(), []));
 		}
 
-		this.commands.unshift(
-			new Cmd(utils.quoted("cd"), [utils.quoted(this.dir)])
-		);
+		this.commands.unshift(new Cmd("cd", [utils.quoted(this.dir)]));
 
 		if (this.commands.length < 1) {
 			return undefined;
