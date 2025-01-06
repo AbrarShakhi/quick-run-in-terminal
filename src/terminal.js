@@ -51,25 +51,31 @@ class Terminal {
 				.getConfiguration("quickRunInTerminal")
 				.get("clearBeforeRun")
 		) {
-			this.commands.unshift(new Cmd(utils.getClear(), []));
+			this.commands.unshift(new Cmd(utils.quoted(utils.getClear()), []));
 		}
 
-		this.commands.unshift(new Cmd("cd", [`"${this.dir}"`]));
+		this.commands.unshift(
+			new Cmd(utils.quoted("cd"), [utils.quoted(this.dir)])
+		);
 
 		if (this.commands.length < 1) {
 			return undefined;
 		}
+		// TODO: NEED TO COMPARE WITHOUT .exe
+		// to utils.js cmd.exe as well
+		let isPwsh = this.shell === "powershell.exe" || this.shell === "pwsh.exe";
 
 		let cmdSep = " && ";
 		const cmdEnd = " ; ";
-		// TODO: NEED TO COMPARE WITHOUT .exe
-		if (this.shell === "powershell.exe" || this.shell === "pwsh.exe") {
+		let preSign = "";
+		if (isPwsh) {
+			preSign = "& ";
 			cmdSep = cmdEnd;
 		}
 
 		// TODO: NEED TO DECOMPOSE INTO FUNCTIONS;
 		let script = "";
-		let singleCmd = this.commands[0].command;
+		let singleCmd = preSign + this.commands[0].command;
 		for (let i = 0; i < this.commands[0].args.length; i++) {
 			singleCmd += ` ${this.commands[0].args[i]}`;
 		}
@@ -77,12 +83,13 @@ class Terminal {
 
 		// TODO: NEED TO MAKE IT LESS COMPLEX
 		for (let i = 1; i < this.commands.length; i++) {
-			singleCmd = this.commands[i].command;
+			singleCmd = preSign + this.commands[i].command;
 			for (let j = 0; j < this.commands[i].args.length; j++) {
 				singleCmd += ` ${this.commands[i].args[j]}`;
 			}
 			script += singleCmd + (i + 1 == this.commands.length ? cmdEnd : cmdSep);
 		}
+		console.log(script);
 		return script;
 	}
 

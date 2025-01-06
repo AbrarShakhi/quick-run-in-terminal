@@ -2,6 +2,7 @@ const vscode = require("vscode");
 const path = require("path");
 
 const terminal = require("./terminal");
+const utils = require("./utils");
 
 /**
  * @param {vscode.TextDocument} doc
@@ -52,9 +53,9 @@ class Language {
 	 */
 	python() {
 		const interpreter = this.cfg.get("Python_interpreterPath");
-		let args = [`"${this.fullpath}"`];
+		let args = [utils.quoted(this.fullpath)];
 
-		this.commands.push(new terminal.Cmd(interpreter, args));
+		this.commands.push(new terminal.Cmd(utils.quoted(interpreter), args));
 		return this.commands;
 	}
 
@@ -76,10 +77,13 @@ class Language {
 		outname = path.join(path.parse(this.fullpath).dir, outname);
 
 		this.commands.push(
-			// TODO: MAKE A FUNCTION TO AUTOMATIC DUBBLE QUOATE PATH
-			new terminal.Cmd(compiler, [`"${this.fullpath}"`, "-o", `"${outname}"`])
+			new terminal.Cmd(utils.quoted(compiler), [
+				utils.quoted(this.fullpath),
+				"-o",
+				utils.quoted(outname),
+			])
 		);
-		this.commands.push(new terminal.Cmd(outname, []));
+		this.commands.push(new terminal.Cmd(utils.quoted(outname), []));
 
 		return this.commands;
 	}

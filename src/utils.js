@@ -33,8 +33,18 @@ function getClear() {
 	}
 }
 
+/**
+ * @param {string} inside
+ * @param {string} quote
+ * @returns {string}
+ */
+function quoted(inside, quote = '"') {
+	return `${quote}${inside}${quote}`;
+}
+
 module.exports = {
 	saveFiles,
 	getClear,
 	getShellname,
+	quoted,
 };
