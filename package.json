@@ -13,7 +13,7 @@
     "type": "git",
     "url": "https://github.com/AbrarShakhi/quick-run-in-terminal"
   },
-  "version": "0.1.1",
+  "version": "0.1.2",
   "engines": {
     "vscode": "^1.96.0"
   },
@@ -38,7 +38,7 @@
     "Other"
   ],
   "activationEvents": [],
-  "main": "./src/extension.js",
+  "main": "./src/main.js",
   "contributes": {
     "commands": [
       {
