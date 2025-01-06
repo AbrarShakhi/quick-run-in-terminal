@@ -13,6 +13,12 @@ First open a `C`, `C++`, `python` files.
 3. click `Quick Run` button in title menu
 4. Open `command palette` and search `Quick Run` abd hit enter.
 
+---
+
+## Demo
+
+![demo](res/demo/tutorial.gif)
+
 ## Features
 
 - compile and run `C/C++` file
@@ -28,12 +34,6 @@ A compiler/interpreter for your favorite language.
 
 > **❗️ Important**: default C/C++ compiler is set to `gcc`/`g++`, For python it is set to `python`. If you want to use deferent compiler/interpreter see [configurations example](#example).
 
-<!-- --- -->
-
-<!-- ## Demo -->
-
-<!-- ![demo](res/demo/demo.gif) -->
-
 ---
 
 ## Configurations
@@ -42,12 +42,12 @@ A compiler/interpreter for your favorite language.
 
 ```json
 {
-	"quickRunInTerminal.binaryOutputName": "",
-	"quickRunInTerminal.C_compilerPath": "gcc",
-	"quickRunInTerminal.clearBeforeRun": true,
-	"quickRunInTerminal.Cpp_compilerPath": "g++",
-	"quickRunInTerminal.Python_interpreterPath": "python",
-	"quickRunInTerminal.saveAllFilesBeforeRun": false
+  "quickRunInTerminal.binaryOutputName": "",
+  "quickRunInTerminal.C_compilerPath": "gcc",
+  "quickRunInTerminal.clearBeforeRun": true,
+  "quickRunInTerminal.Cpp_compilerPath": "g++",
+  "quickRunInTerminal.Python_interpreterPath": "python",
+  "quickRunInTerminal.saveAllFilesBeforeRun": false
 }
 ```
 
@@ -60,10 +60,10 @@ For C/c++ find `Quick Run In Terminal: C_compiler Path` or `Quick Run In Termina
 
 ```json
 {
-	"quickRunInTerminal.Python_interpreterPath": "/home/user/bin/python3",
-	"quickRunInTerminal.Python_interpreterPath": "python3",
-	"quickRunInTerminal.Cpp_compilerPath": "/usr/g++",
-	"quickRunInTerminal.C_compilerPath": "clang"
+  "quickRunInTerminal.Python_interpreterPath": "/home/user/bin/python3",
+  "quickRunInTerminal.Python_interpreterPath": "python3",
+  "quickRunInTerminal.Cpp_compilerPath": "/usr/g++",
+  "quickRunInTerminal.C_compilerPath": "clang"
 }
 ```
 
