@@ -17,7 +17,7 @@ First open a `C`, `C++`, `python` files.
 
 ## Demo
 
-![demo](res/demo/tutorial.gif)
+![demo](res/demo/demo.gif)
 
 ## Features
 
