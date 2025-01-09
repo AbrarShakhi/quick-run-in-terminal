@@ -24,8 +24,9 @@ function build(doc) {
 			lang.python();
 			break;
 		case "rust":
-		// TODO: make a runst runner and uncomment 'break' statement
-		// break;
+			// TODO: NEED TO CHANGE THE FUNC NAME
+			lang.c_cpp(cfg.get("Rust_compilerPath"));
+			break;
 		default:
 			console.log(doc.languageId);
 			return undefined;
