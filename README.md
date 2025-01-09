@@ -70,6 +70,6 @@ For C/c++ find `Quick Run In Terminal: C_compiler Path` or `Quick Run In Termina
 
 ---
 
-report bugs/issues here [github](https://github.com/AbrarShakhi/runccpp-vsce/issues)
+report bugs/issues here [github issues](https://github.com/AbrarShakhi/quick-run-in-terminal/issues
 
-<a href="https://www.flaticon.com/free-icons/coding" title="coding icons">Coding icons created by iconsmind - Flaticon</a>
+<a href="https://www.flaticon.com/free-icons/coding" title="coding icons">Icons created by iconsmind - Flaticon</a>
