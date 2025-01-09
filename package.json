@@ -104,6 +104,11 @@
           "default": "g++",
           "description": "C++ compiler path/compiler name"
         },
+        "quickRunInTerminal.Rust_compilerPath": {
+          "type": "string",
+          "default": "rustc",
+          "description": "Rust compiler path/compiler name"
+        },
         "quickRunInTerminal.Python_interpreterPath": {
           "type": "string",
           "default": "python",
