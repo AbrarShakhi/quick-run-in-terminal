@@ -15,17 +15,23 @@ function build(doc) {
 
 	switch (doc.languageId) {
 		case "c":
-			lang.c_cpp(cfg.get("C_compilerPath"));
+			lang.c_cpp("C_compilerPath");
 			break;
 		case "cpp":
-			lang.c_cpp(cfg.get("Cpp_compilerPath"));
+			lang.c_cpp("Cpp_compilerPath");
 			break;
 		case "python":
-			lang.python();
+			lang.python("Python_interpreterPath");
 			break;
 		case "rust":
 			// TODO: NEED TO CHANGE THE FUNC NAME
-			lang.c_cpp(cfg.get("Rust_compilerPath"));
+			lang.c_cpp("Rust_compilerPath");
+			break;
+		case "java":
+			lang.java();
+			break;
+		case "javascript":
+			lang.python("JavaScript_interpreterPath");
 			break;
 		default:
 			console.log(doc.languageId);
@@ -49,11 +55,11 @@ class Language {
 	}
 
 	/**
-	 * @param void
+	 * @param {string} iname
 	 * @returns {terminal.Cmd[]}
 	 */
-	python() {
-		const interpreter = this.cfg.get("Python_interpreterPath");
+	python(iname) {
+		const interpreter = this.cfg.get(iname);
 		let args = [utils.quoted(this.fullpath)];
 
 		this.commands.push(new terminal.Cmd(utils.quoted(interpreter), args));
@@ -61,10 +67,27 @@ class Language {
 	}
 
 	/**
-	 * @param {string} compiler
+	 * @param void
 	 * @returns {terminal.Cmd[]}
 	 */
-	c_cpp(compiler) {
+	java() {
+		const compiler = this.cfg.get("Java_CompilerPath");
+		const runtime = this.cfg.get("Java_Runtime");
+
+		let filename = [utils.quoted(this.fullpath)];
+		let ouputname = [utils.quoted(path.parse(this.fullpath).name)];
+
+		this.commands.push(new terminal.Cmd(utils.quoted(compiler), filename));
+		this.commands.push(new terminal.Cmd(utils.quoted(runtime), ouputname));
+		return this.commands;
+	}
+
+	/**
+	 * @param {string} cname
+	 * @returns {terminal.Cmd[]}
+	 */
+	c_cpp(cname) {
+		const compiler = this.cfg.get(cname);
 		let outname = this.cfg.get("binaryOutputName");
 		if (outname == "") {
 			outname = path.parse(this.fullpath).name;

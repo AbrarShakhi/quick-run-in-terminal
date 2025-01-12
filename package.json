@@ -13,7 +13,7 @@
     "type": "git",
     "url": "https://github.com/AbrarShakhi/quick-run-in-terminal"
   },
-  "version": "0.1.3",
+  "version": "0.1.4",
   "engines": {
     "vscode": "^1.96.0"
   },
@@ -28,10 +28,9 @@
     "python",
     "run code",
     "code runner",
-    "quick run",
-    "run in terminal",
-    "terminal",
-    "run c/c++"
+    "run C/C++",
+    "rust",
+    "java"
   ],
   "icon": "./res/icons/icon.png",
   "categories": [
@@ -109,10 +108,27 @@
           "default": "rustc",
           "description": "Rust compiler path/compiler name"
         },
+
+        "quickRunInTerminal.Java_CompilerPath": {
+          "type": "string",
+          "default": "javac",
+          "description": "Java compiler path/compiler name"
+        },
+
+        "quickRunInTerminal.Java_Runtime": {
+          "type": "string",
+          "default": "java",
+          "description": "Java runtime path/program name"
+        },
         "quickRunInTerminal.Python_interpreterPath": {
           "type": "string",
           "default": "python",
           "description": "python interpreter/path name"
+        },
+        "quickRunInTerminal.JavaScript_interpreterPath": {
+          "type": "string",
+          "default": "node",
+          "description": "javascript interpreter/path name"
         }
       }
     }
