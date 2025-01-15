@@ -1,5 +1,10 @@
 # Quick run in Terminal Change Log
 
+## Version [0.1.4]: Jan 15, 2025
+
+- fixed #14 run button missing for js, java and rust files
+- fixed #13
+
 ## Version [0.1.4]: Jan 12, 2025
 
 - new Rust and Java and JavaScript runner.
