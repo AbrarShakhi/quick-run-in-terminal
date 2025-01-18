@@ -1,11 +1,10 @@
-const assert = require('assert');
-const vscode = require('vscode');
+const assert = require("assert");
+const vscode = require("vscode");
 
-const utilsTest = require('../src/utils');
+const utilsTest = require("../src/utils");
 
-suite('Extension Test Suite', () => {
-    vscode.window.showInformationMessage('Start all tests.');
+suite("Extension Test Suite", () => {
+  vscode.window.showInformationMessage("Start all tests.");
 
-    test('', () => {
-    });
+  test("", () => {});
 });

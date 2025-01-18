@@ -21,11 +21,8 @@ First open a `C`, `C++`, `python`, `rust`, `java`, `javascript` files. Do one of
 
 ## Features
 
-- compile and run `C/C++` file
-- compile and run `python` file
-- compile and run `java` file
-- compile and run `rust` file
-- compile and run `javascript` file
+- compile and run `C/C++`, `python`, `java`, `rust`, `javascript` by default.
+- You can create custom command to build and run.
 
 ---
 
@@ -43,24 +40,24 @@ A compiler/interpreter for your favorite language.
 
 ```jsonc
 {
-	// clears the terminal before run.
-	"quickRunInTerminal.clearBeforeRun": true,
-	// If false saves only active file, otherwise saves all files. 
-	"quickRunInTerminal.saveAllFilesBeforeRun": false,
-	// empty string means name of the program followed by exe/out
-	"quickRunInTerminal.binaryOutputName": "",
-	// C/C++
-	"quickRunInTerminal.C_compilerPath": "gcc",
-	"quickRunInTerminal.Cpp_compilerPath": "g++",
-	// Python
-	"quickRunInTerminal.Python_interpreterPath": "python",
-	// Rust
-	"quickRunInTerminal.Rust_compilerPath": "rustc",
-	// Java
-	"quickRunInTerminal.Java_CompilerPath": "javac",
-	"quickRunInTerminal.Java_Runtime": "java",
-	// JavaScript
-	"quickRunInTerminal.JavaScript_interpreterPath": "node",
+  // clears the terminal before run.
+  "quickRunInTerminal.clearBeforeRun": true,
+  // If false saves only active file, otherwise saves all files.
+  "quickRunInTerminal.saveAllFilesBeforeRun": false,
+  // empty string means name of the program followed by exe/out
+  "quickRunInTerminal.binaryOutputName": "",
+  // C/C++
+  "quickRunInTerminal.C_compilerPath": "gcc",
+  "quickRunInTerminal.Cpp_compilerPath": "g++",
+  // Python
+  "quickRunInTerminal.Python_interpreterPath": "python",
+  // Rust
+  "quickRunInTerminal.Rust_compilerPath": "rustc",
+  // Java
+  "quickRunInTerminal.Java_CompilerPath": "javac",
+  "quickRunInTerminal.Java_Runtime": "java",
+  // JavaScript
+  "quickRunInTerminal.JavaScript_interpreterPath": "node"
 }
 ```
 
@@ -77,10 +74,10 @@ For `C/C++` find `Quick Run In Terminal: C_compiler Path` or `Quick Run In Termi
 
 ```json
 {
-	"quickRunInTerminal.Python_interpreterPath": "/home/user/bin/python3",
-	"quickRunInTerminal.Python_interpreterPath": "python3",
-	"quickRunInTerminal.Cpp_compilerPath": "/usr/g++",
-	"quickRunInTerminal.C_compilerPath": "clang"
+  "quickRunInTerminal.Python_interpreterPath": "/home/user/bin/python3",
+  "quickRunInTerminal.Python_interpreterPath": "python3",
+  "quickRunInTerminal.Cpp_compilerPath": "/usr/g++",
+  "quickRunInTerminal.C_compilerPath": "clang"
 }
 ```
 

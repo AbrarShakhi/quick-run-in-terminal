@@ -1,19 +1,19 @@
 {
   "name": "quick-run-in-terminal",
   "displayName": "Quick run in terminal",
-  "description": "Run C, C++, python program in terminal",
+  "description": "Run C, C++, python, java, rust, javascript program in terminal",
   "publisher": "AbrarShakhi",
   "bugs": {
     "type": "git",
     "url": "https://github.com/AbrarShakhi/quick-run-in-terminal/issues"
   },
-  "homepage" : "https://github.com/AbrarShakhi/quick-run-in-terminal/blob/main/README.md",
+  "homepage": "https://github.com/AbrarShakhi/quick-run-in-terminal/blob/main/README.md",
   "license": "GNU",
   "repository": {
     "type": "git",
     "url": "https://github.com/AbrarShakhi/quick-run-in-terminal"
   },
-  "version": "0.1.5",
+  "version": "0.2.0",
   "engines": {
     "vscode": "^1.96.0"
   },
@@ -105,13 +105,11 @@
           "default": "rustc",
           "description": "Rust compiler path/compiler name"
         },
-
         "quickRunInTerminal.Java_CompilerPath": {
           "type": "string",
           "default": "javac",
           "description": "Java compiler path/compiler name"
         },
-
         "quickRunInTerminal.Java_Runtime": {
           "type": "string",
           "default": "java",

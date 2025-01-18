@@ -8,48 +8,48 @@ const language = require("./language");
  * @param {vscode.ExtensionContext} context
  */
 function activate(context) {
-	console.log('"quick-run-in-terminal" is now active!');
+  console.log('"quick-run-in-terminal" is now active!');
 
-	const disposable = vscode.commands.registerCommand(
-		"quickRunInTerminal.run",
-		() => {
-			const editor = vscode.window.activeTextEditor;
-			if (!editor) {
-				return;
-			}
-			const doc = editor.document;
-			if (!doc || !doc.uri) {
-				return;
-			}
+  const disposable = vscode.commands.registerCommand(
+    "quickRunInTerminal.run",
+    () => {
+      const editor = vscode.window.activeTextEditor;
+      if (!editor) {
+        return;
+      }
+      const doc = editor.document;
+      if (!doc || !doc.uri) {
+        return;
+      }
 
-			utils.saveFiles(doc.uri);
+      utils.saveFiles(doc.uri);
 
-			const commands = language.build(doc);
-			if (!commands) {
-				vscode.window
-					.showErrorMessage(
-						`${doc.languageId} is not supported yet`
-						// "Request this language"
-					)
-					.then((clicked) => {
-						// console.log("got value: " + clicked);
-					});
-				return;
-			}
+      const batchCmd = language.build(doc);
+      if (!batchCmd) {
+        vscode.window
+          .showErrorMessage(
+            `${doc.languageId} is not supported yet`
+            // "Request this language"
+          )
+          .then((clicked) => {
+            // console.log("got value: " + clicked);
+          });
+        return;
+      }
 
-			const term = new terminal.Terminal(commands, doc);
-			term.run();
-		}
-	);
+      const term = new terminal.Terminal(batchCmd, doc);
+      term.run();
+    }
+  );
 
-	context.subscriptions.push(disposable);
+  context.subscriptions.push(disposable);
 }
 
 function deactivate() {
-	console.log('"quick-run-in-terminal" is deactivated!');
+  console.log('"quick-run-in-terminal" is deactivated!');
 }
 
 module.exports = {
-	activate,
-	deactivate,
+  activate,
+  deactivate,
 };
