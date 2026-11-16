@@ -1,3 +1,9 @@
 node_modules
 .vscode-test/
 *.vsix
+
+suggestion.md
+yarn.lock
+
+*.log
+.DS_Store

@@ -1,5 +1,18 @@
 # Quick run in Terminal Change Log
 
+## Version [0.1.6]: Nov 16, 2026
+
+- shows an error with an Open Settings button when a compiler or interpreter setting is empty.
+- warns when the compiler or interpreter is not found, with Open Settings and Run anyway options.
+- new setting stopPreviousRun: presses Ctrl+C in the Quick-Run terminal before a new run.
+- Java now compiles into the source root and runs the main class by its full name.
+- binaryOutputName no longer doubles the extension (app.exe stays app.exe).
+- run from the Explorer or editor menu now runs the clicked file.
+- commands are now built per shell (PowerShell, cmd, bash).
+- files are fully saved before the run starts.
+- renamed res/snapshorts to res/snapshots.
+- updated package description and license.
+
 ## Version [0.1.5]: Jan 15, 2025
 
 - fixed #14 run button missing for js, java and rust files

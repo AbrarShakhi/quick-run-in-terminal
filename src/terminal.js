@@ -2,6 +2,7 @@ const vscode = require("vscode");
 const path = require("path");
 
 const utils = require("./utils");
+const shell = require("./shell");
 
 /**
  * @param {string} command
@@ -12,6 +13,8 @@ function Cmd(command, args) {
 	this.args = args;
 }
 
+const TERMINAL_NAME = "Quick-Run";
+
 class Terminal {
 	/**
 	 * @param {Cmd[]} commands
@@ -20,79 +23,37 @@ class Terminal {
 	constructor(commands, doc) {
 		this.commands = commands;
 		this.dir = path.dirname(path.normalize(doc.fileName));
-		this.shell = utils.getShellname().toLowerCase();
-		this.terminame = "Quick-Run";
+		this.family = utils.getShellFamily();
 
+		const cfg = vscode.workspace.getConfiguration("quickRunInTerminal");
+		this.runnerScript = shell.buildScript(this.commands, {
+			dir: this.dir,
+			family: this.family,
+			clear: !!cfg.get("clearBeforeRun"),
+		});
+		this.stopPrevious = !!cfg.get("stopPreviousRun");
+		this.reused = false;
 		this.term = this.#initTerm();
-		this.runnerScript = this.#finalizeCommand();
 	}
 
 	/**
 	 * @returns {vscode.Terminal}
 	 */
 	#initTerm() {
-		for (let i = 0; i < vscode.window.terminals.length; i++) {
-			if (vscode.window.terminals[i].name === this.terminame) {
-				// TODO: NEED A BETTER WAY TO FIND EXISTING TERMINAL
-				// if (vscode.window.terminals[i].processId)
-				return vscode.window.terminals[i];
-			}
+		const existing = vscode.window.terminals.find(
+			(t) => t.name === TERMINAL_NAME
+		);
+		if (existing && existing.exitStatus === undefined) {
+			this.reused = true;
+			return existing;
 		}
-		// TODO: NEED TO PLAY WITH THIS
-		return vscode.window.createTerminal(this.terminame);
+		if (existing) {
+			existing.dispose();
+		}
+		return vscode.window.createTerminal(TERMINAL_NAME);
 	}
 
 	/**
-	 * @returns {string | undefined}
-	 */
-	#finalizeCommand() {
-		if (
-			vscode.workspace
-				.getConfiguration("quickRunInTerminal")
-				.get("clearBeforeRun")
-		) {
-			this.commands.unshift(new Cmd(utils.getClear(), []));
-		}
-
-		this.commands.unshift(new Cmd("cd", [utils.quoted(this.dir)]));
-
-		if (this.commands.length < 1) {
-			return undefined;
-		}
-		// TODO: NEED TO COMPARE WITHOUT .exe
-		// to utils.js cmd.exe as well
-		let isPwsh = this.shell === "powershell.exe" || this.shell === "pwsh.exe";
-
-		let cmdSep = " && ";
-		const cmdEnd = " ; ";
-		let preSign = "";
-		if (isPwsh) {
-			preSign = "& ";
-			cmdSep = cmdEnd;
-		}
-
-		// TODO: NEED TO DECOMPOSE INTO FUNCTIONS;
-		let script = "";
-		let singleCmd = preSign + this.commands[0].command;
-		for (let i = 0; i < this.commands[0].args.length; i++) {
-			singleCmd += ` ${this.commands[0].args[i]}`;
-		}
-		script += singleCmd + (1 == this.commands.length ? cmdEnd : cmdSep);
-
-		// TODO: NEED TO MAKE IT LESS COMPLEX
-		for (let i = 1; i < this.commands.length; i++) {
-			singleCmd = preSign + this.commands[i].command;
-			for (let j = 0; j < this.commands[i].args.length; j++) {
-				singleCmd += ` ${this.commands[i].args[j]}`;
-			}
-			script += singleCmd + (i + 1 == this.commands.length ? cmdEnd : cmdSep);
-		}
-		console.log(script);
-		return script;
-	}
-
-	/**
-	 * @param void
 	 * @returns {boolean}
 	 */
 	run() {
@@ -100,7 +61,10 @@ class Terminal {
 			return false;
 		}
 		this.term.show();
-		this.term.sendText("");
+		if (this.reused && this.stopPrevious) {
+			// Ctrl+C: stops a program from the last run that is still going
+			this.term.sendText("\x03", false);
+		}
 		this.term.sendText(this.runnerScript);
 		return true;
 	}

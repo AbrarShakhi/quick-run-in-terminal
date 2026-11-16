@@ -17,7 +17,7 @@ First open a `C`, `C++`, `python`, `rust`, `java`, `javascript` files. Do one of
 
 ## Demo
 
-![demo GIF](./res/snapshorts/demo.gif)
+![demo GIF](./res/snapshots/demo.gif)
 
 ## Features
 
