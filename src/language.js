@@ -2,11 +2,30 @@ const vscode = require("vscode");
 const path = require("path");
 
 const terminal = require("./terminal");
-const utils = require("./utils");
+const { javaPlan } = require("./java");
+
+/**
+ * Thrown when a setting the run needs is empty.
+ */
+class ConfigError extends Error {
+	/**
+	 * @param {string} message
+	 * @param {string} setting short setting name, e.g. "C_compilerPath"
+	 */
+	constructor(message, setting) {
+		super(message);
+		this.setting = setting;
+	}
+}
+
+/**
+ * @typedef {{ commands: terminal.Cmd[], tools: {setting: string, program: string}[] }} BuildResult
+ */
 
 /**
  * @param {vscode.TextDocument} doc
- * @returns {terminal.Cmd[] | undefined}
+ * @returns {BuildResult | undefined} undefined when the language is not supported
+ * @throws {ConfigError}
  */
 function build(doc) {
 	const file = path.parse(path.normalize(doc.fileName));
@@ -15,29 +34,27 @@ function build(doc) {
 
 	switch (doc.languageId) {
 		case "c":
-			lang.c_cpp("C_compilerPath");
+			lang.compiled("C_compilerPath");
 			break;
 		case "cpp":
-			lang.c_cpp("Cpp_compilerPath");
-			break;
-		case "python":
-			lang.python("Python_interpreterPath");
+			lang.compiled("Cpp_compilerPath");
 			break;
 		case "rust":
-			// TODO: NEED TO CHANGE THE FUNC NAME
-			lang.c_cpp("Rust_compilerPath");
+			lang.compiled("Rust_compilerPath");
+			break;
+		case "python":
+			lang.interpreted("Python_interpreterPath");
+			break;
+		case "javascript":
+			lang.interpreted("JavaScript_interpreterPath");
 			break;
 		case "java":
 			lang.java();
 			break;
-		case "javascript":
-			lang.python("JavaScript_interpreterPath");
-			break;
 		default:
-			console.log(doc.languageId);
 			return undefined;
 	}
-	return lang.commands;
+	return { commands: lang.commands, tools: lang.tools };
 }
 
 class Language {
@@ -51,66 +68,84 @@ class Language {
 		this.file = file;
 		this.fullpath = path.normalize(this.doc.fileName);
 		this.cfg = cfg;
+		/** @type {terminal.Cmd[]} */
 		this.commands = [];
+		/** @type {{setting: string, program: string}[]} */
+		this.tools = [];
 	}
 
 	/**
-	 * @param {string} iname
-	 * @returns {terminal.Cmd[]}
+	 * Reads a program setting and refuses an empty value.
+	 * @param {string} setting
+	 * @returns {string}
 	 */
-	python(iname) {
-		const interpreter = this.cfg.get(iname);
-		let args = [utils.quoted(this.fullpath)];
-
-		this.commands.push(new terminal.Cmd(utils.quoted(interpreter), args));
-		return this.commands;
+	tool(setting) {
+		const value = String(this.cfg.get(setting) ?? "").trim();
+		if (value === "") {
+			throw new ConfigError(
+				`"quickRunInTerminal.${setting}" is empty. Set it to a program name or path.`,
+				setting
+			);
+		}
+		this.tools.push({ setting, program: value });
+		return value;
 	}
 
 	/**
-	 * @param void
-	 * @returns {terminal.Cmd[]}
+	 * Python, JavaScript: `<interpreter> <file>`
+	 * @param {string} setting
+	 */
+	interpreted(setting) {
+		const interpreter = this.tool(setting);
+		this.commands.push(new terminal.Cmd(interpreter, [this.fullpath]));
+	}
+
+	/**
+	 * Java: compile into the source root, run the main class by its full name.
 	 */
 	java() {
-		const compiler = this.cfg.get("Java_CompilerPath");
-		const runtime = this.cfg.get("Java_Runtime");
+		const compiler = this.tool("Java_CompilerPath");
+		const runtime = this.tool("Java_Runtime");
+		const { root, mainClass } = javaPlan(this.doc.getText(), this.fullpath);
 
-		let filename = [utils.quoted(this.fullpath)];
-		let ouputname = [utils.quoted(path.parse(this.fullpath).name)];
-
-		this.commands.push(new terminal.Cmd(utils.quoted(compiler), filename));
-		this.commands.push(new terminal.Cmd(utils.quoted(runtime), ouputname));
-		return this.commands;
+		this.commands.push(
+			new terminal.Cmd(compiler, ["-d", root, this.fullpath])
+		);
+		this.commands.push(new terminal.Cmd(runtime, ["-cp", root, mainClass]));
 	}
 
 	/**
-	 * @param {string} cname
-	 * @returns {terminal.Cmd[]}
+	 * C, C++, Rust: `<compiler> <file> -o <binary>` then run the binary.
+	 * @param {string} setting
 	 */
-	c_cpp(cname) {
-		const compiler = this.cfg.get(cname);
-		let outname = this.cfg.get("binaryOutputName");
-		if (outname == "") {
-			outname = path.parse(this.fullpath).name;
-		}
-		if (process.platform == "win32") {
-			outname = outname + ".exe";
-		} else {
-			outname = outname + ".out";
-		}
-
-		outname = path.join(path.parse(this.fullpath).dir, outname);
+	compiled(setting) {
+		const compiler = this.tool(setting);
+		const outname = this.binaryName();
 
 		this.commands.push(
-			new terminal.Cmd(utils.quoted(compiler), [
-				utils.quoted(this.fullpath),
-				"-o",
-				utils.quoted(outname),
-			])
+			new terminal.Cmd(compiler, [this.fullpath, "-o", outname])
 		);
-		this.commands.push(new terminal.Cmd(utils.quoted(outname), []));
+		this.commands.push(new terminal.Cmd(outname, []));
+	}
 
-		return this.commands;
+	/**
+	 * Full path of the binary. Uses the `binaryOutputName` setting if set,
+	 * and never doubles the extension (`app.exe` stays `app.exe`).
+	 * @returns {string}
+	 */
+	binaryName() {
+		const ext = process.platform === "win32" ? ".exe" : ".out";
+		let name = String(this.cfg.get("binaryOutputName") ?? "").trim();
+		// only a file name is allowed, not a path
+		name = path.basename(name);
+		if (name === "") {
+			name = this.file.name;
+		}
+		if (!name.toLowerCase().endsWith(ext)) {
+			name += ext;
+		}
+		return path.join(this.file.dir, name);
 	}
 }
 
-module.exports = { build };
+module.exports = { build, ConfigError };

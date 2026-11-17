@@ -1,14 +1,14 @@
 {
   "name": "quick-run-in-terminal",
   "displayName": "Quick run in terminal",
-  "description": "Run C, C++, python program in terminal",
+  "description": "Run C, C++, Rust, Java, Python and JavaScript files in the terminal",
   "publisher": "AbrarShakhi",
   "bugs": {
     "type": "git",
     "url": "https://github.com/AbrarShakhi/quick-run-in-terminal/issues"
   },
   "homepage" : "https://github.com/AbrarShakhi/quick-run-in-terminal/blob/main/README.md",
-  "license": "GNU",
+  "license": "GPL-3.0-only",
   "repository": {
     "type": "git",
     "url": "https://github.com/AbrarShakhi/quick-run-in-terminal"
@@ -84,6 +84,11 @@
           "type": "boolean",
           "default": false,
           "description": "save all files before run, default only save active file"
+        },
+        "quickRunInTerminal.stopPreviousRun": {
+          "type": "boolean",
+          "default": true,
+          "description": "Press Ctrl+C in the Quick-Run terminal before a new run, so a program that is still running does not receive the command as input"
         },
         "quickRunInTerminal.binaryOutputName": {
           "type": "string",

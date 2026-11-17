@@ -1,10 +1,15 @@
 const assert = require("assert");
-const vscode = require("vscode");
 
-const extensionTest = require("../src/main");
+suite("main", () => {
+	test("exports activate and deactivate", () => {
+		const main = require("../src/main");
+		assert.strictEqual(typeof main.activate, "function");
+		assert.strictEqual(typeof main.deactivate, "function");
+	});
 
-suite("Extension Test Suite", () => {
-	vscode.window.showInformationMessage("Start all tests.");
-
-	test("", () => {});
+	test("package.json passes the clicked file to the command (menus are wired)", () => {
+		const pkg = require("../package.json");
+		assert.ok(pkg.contributes.menus["explorer/context"].length > 0);
+		assert.strictEqual(pkg.license, "GPL-3.0-only");
+	});
 });

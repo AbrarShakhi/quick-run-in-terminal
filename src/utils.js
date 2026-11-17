@@ -1,50 +1,58 @@
 const vscode = require("vscode");
 const path = require("path");
+const fs = require("fs");
+
+const shell = require("./shell");
 
 /**
+ * Saves the file(s) and waits until VS Code is done writing them.
  * @param {vscode.Uri} uri
+ * @returns {Promise<void>}
  */
-function saveFiles(uri) {
+async function saveFiles(uri) {
 	const cfg = vscode.workspace.getConfiguration("quickRunInTerminal");
 	if (cfg.get("saveAllFilesBeforeRun")) {
-		vscode.workspace.saveAll();
+		await vscode.workspace.saveAll();
 	} else {
-		vscode.workspace.save(uri);
+		await vscode.workspace.save(uri);
 	}
 }
 
 /**
- * @returns {string}
+ * @returns {shell.ShellFamily}
  */
-function getShellname() {
-	return path.basename(path.normalize(vscode.env.shell));
+function getShellFamily() {
+	return shell.shellFamily(vscode.env.shell);
 }
 
 /**
- * @returns {string} "cls" | "clear"
+ * Checks if a program can be found, either as a path or on PATH.
+ * @param {string} program
+ * @returns {boolean}
  */
-function getClear() {
-	const shellname = getShellname().toLowerCase();
-	console.log("vscode shellname: " + shellname);
-	if (shellname === "cmd.exe") {
-		return "cls";
-	} else {
-		return "clear";
+function commandExists(program) {
+	const isFile = (p) => {
+		try {
+			return fs.statSync(p).isFile();
+		} catch {
+			return false;
+		}
+	};
+
+	if (/[\\/]/.test(program)) {
+		return isFile(program);
 	}
-}
 
-/**
- * @param {string} inside
- * @param {string} quote
- * @returns {string}
- */
-function quoted(inside, quote = '"') {
-	return `${quote}${inside}${quote}`;
+	const exts =
+		process.platform === "win32"
+			? ["", ...(process.env.PATHEXT || ".EXE;.CMD;.BAT").split(";")]
+			: [""];
+	const dirs = (process.env.PATH || "").split(path.delimiter).filter(Boolean);
+	return dirs.some((dir) => exts.some((ext) => isFile(path.join(dir, program + ext))));
 }
 
 module.exports = {
 	saveFiles,
-	getClear,
-	getShellname,
-	quoted,
+	getShellFamily,
+	commandExists,
 };
